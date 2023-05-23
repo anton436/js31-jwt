@@ -18,6 +18,9 @@ const reducer = (state = INIT_STATE, action) => {
     case "GET_CATEGORIES":
       return { ...state, categories: action.payload };
 
+    case "GET_PRODUCTS":
+      return { ...state, products: action.payload };
+
     default:
       return state;
   }
@@ -57,7 +60,23 @@ const ProductContextProvider = ({ children }) => {
     }
   }
 
-  const values = { getCategories, categories: state.categories, createProduct };
+  async function getProducts() {
+    try {
+      const res = await axios(`${API}/products/`, getConfig());
+      dispatch({ type: "GET_PRODUCTS", payload: res.data });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const values = {
+    getCategories,
+    categories: state.categories,
+    createProduct,
+
+    getProducts,
+    products: state.products,
+  };
   return (
     <productContext.Provider value={values}>{children}</productContext.Provider>
   );
