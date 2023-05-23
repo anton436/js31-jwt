@@ -9,6 +9,7 @@ const EditProduct = () => {
     createProduct,
     oneProduct,
     getOneProduct,
+    updateProduct,
   } = useProduct();
 
   const [title, setTitle] = useState("");
@@ -39,11 +40,13 @@ const EditProduct = () => {
     newProduct.append("description", description);
     newProduct.append("price", price);
     newProduct.append("category", category);
-    newProduct.append("image", image);
-    createProduct(newProduct);
+
+    if (image) {
+      newProduct.append("image", image);
+    }
+    updateProduct(id, newProduct);
   }
 
-  console.log(oneProduct);
   return (
     <div>
       <h2>Edit Product</h2>

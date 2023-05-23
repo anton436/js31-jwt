@@ -94,6 +94,15 @@ const ProductContextProvider = ({ children }) => {
     dispatch({ type: "GET_ONE_PRODUCT", payload: res.data });
   }
 
+  async function updateProduct(id, editedProduct) {
+    try {
+      await axios.patch(`${API}/products/${id}/`, editedProduct, getConfig());
+      navigate("/products");
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   const values = {
     getCategories,
     categories: state.categories,
@@ -106,6 +115,7 @@ const ProductContextProvider = ({ children }) => {
 
     getOneProduct,
     oneProduct: state.oneProduct,
+    updateProduct,
   };
   return (
     <productContext.Provider value={values}>{children}</productContext.Provider>
