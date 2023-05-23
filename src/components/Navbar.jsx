@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
@@ -5,9 +6,17 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContextProvider";
 
 function NavScrollExample() {
   const navigate = useNavigate();
+  const { checkAuth, handleLogout, currentUser } = useAuth();
+
+  useEffect(() => {
+    if (localStorage.getItem("tokens")) {
+      checkAuth();
+    }
+  }, []);
   return (
     <Navbar bg="light" expand="lg">
       <Container fluid>
@@ -28,10 +37,20 @@ function NavScrollExample() {
                 Login
               </NavDropdown.Item>
               <NavDropdown.Divider />
-              <NavDropdown.Item href="#action5">Logout</NavDropdown.Item>
+              <NavDropdown.Item onClick={handleLogout}>Logout</NavDropdown.Item>
             </NavDropdown>
+
+            <NavDropdown title="Product" id="navbarScrollingDropdown">
+              <NavDropdown.Item onClick={() => navigate("/products")}>
+                Product List
+              </NavDropdown.Item>
+              <NavDropdown.Item onClick={() => navigate("/add")}>
+                Add Product
+              </NavDropdown.Item>
+            </NavDropdown>
+
             <Nav.Link href="#" disabled>
-              Link
+              {currentUser ? currentUser : "No auth user"}
             </Nav.Link>
           </Nav>
           <Form className="d-flex">
