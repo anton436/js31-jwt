@@ -19,7 +19,14 @@ const reducer = (state = INIT_STATE, action) => {
       return { ...state, categories: action.payload };
 
     case "GET_PRODUCTS":
-      return { ...state, products: action.payload };
+      return {
+        ...state,
+        products: action.payload.results,
+        pages: Math.ceil(action.payload.count / 6),
+      };
+
+    case "GET_ONE_PRODUCT":
+      return { ...state, oneProduct: action.payload };
 
     default:
       return state;
@@ -62,11 +69,29 @@ const ProductContextProvider = ({ children }) => {
 
   async function getProducts() {
     try {
-      const res = await axios(`${API}/products/`, getConfig());
-      dispatch({ type: "GET_PRODUCTS", payload: res.data.results });
+      const res = await axios(
+        `${API}/products/${window.location.search}`,
+        getConfig()
+      );
+      dispatch({ type: "GET_PRODUCTS", payload: res.data });
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async function deleteProduct(id) {
+    try {
+      await axios.delete(`${API}/products/${id}/`, getConfig());
+      getProducts();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function getOneProduct(id) {
+    const res = await axios(`${API}/products/${id}/`, getConfig());
+
+    dispatch({ type: "GET_ONE_PRODUCT", payload: res.data });
   }
 
   const values = {
@@ -76,6 +101,11 @@ const ProductContextProvider = ({ children }) => {
 
     getProducts,
     products: state.products,
+    pages: state.pages,
+    deleteProduct,
+
+    getOneProduct,
+    oneProduct: state.oneProduct,
   };
   return (
     <productContext.Provider value={values}>{children}</productContext.Provider>
